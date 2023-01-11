@@ -70,10 +70,25 @@ lastFakePoint = -(path(:,end-1) - path(:,end)) + path(:,end);
 fakePoints = [firstFakePoint lastFakePoint];
 extraPath = mod(size(path,2), 4);
 if extraPath ~= 0
-    error("Not implemented yet!")
+    disp("Working with " + size(path,2) + " points.")
+    disp("This is not dividieble by 4...")
 end
 numberOfSections = size(path,2)/4;
 
+pointsCarmull = carmull_twoForLoops(path, 10);
+
+%t = linspace(0,1);
+%pathAndFake = [firstFakePoint path lastFakePoint];
+%pointsCarmull = zeros(2, (size(path,2)-1)*size(t,2));
+%sectionSize = size(t,2);
+%
+%for i = 1:size(pathAndFake,2)-3
+%    for j = 1:sectionSize
+%        pointsCarmull(1,j+(sectionSize)*(i-1)) = Carmull(t(j), pathAndFake(1,i), pathAndFake(1,i+1), pathAndFake(1,i+2), pathAndFake(1,i+3));
+%        pointsCarmull(2,j+(sectionSize)*(i-1)) = Carmull(t(j), pathAndFake(2,i), pathAndFake(2,i+1), pathAndFake(2,i+2), pathAndFake(2,i+3));
+%    end
+%end
+%%
 h = linspace(0,2);
 onSection = floor(h) + 1;
 
@@ -88,10 +103,18 @@ while onSection <= numberOfSections
     onSection = floor(h(i)) + 1;
 end
 
+%%
+clf;clc
+%Something seems off... The algorithm with tow for-loops is faster then the
+%one with only one for-loop...
+%[pointsCarmull,fakePoints] = carmull_twoForLoops(path, 60);
+[pointsCarmull,fakePoints] = carmull_faster(path, 60);
+
 hold on
+grid on
 title("Testing a cubic spline (Carmull-Rom)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
-plot(pointsCarmull(1,:), pointsCarmull(2,:))
+plot(pointsCarmull(1,:), pointsCarmull(2,:), 'LineWidth',3)
 %Plot the fake points
 line([fakePoints(1,1) path(1,1)], [fakePoints(2,1) path(2,1)], 'LineStyle', '--', 'Marker', 'o')
 line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', '--', 'Marker', 'o')
@@ -99,6 +122,30 @@ line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', 
 %for i = 1:size(onSection,2)
 %    
 %end
+
+saveas(gcf,"carmull_twoForLoops.png")
+%% Testing to vectorize some part
+clc; clear
+t = (1:4)';
+P_0 = 1; P_1 = 1; P_2 = 3; P_3 = 2;
+%Think this is a smart hack...
+%Instead of ones(...) to get the first collumn in A, we do t.^0 which will
+%t number of 0s.
+A = [t.^0 t t.^2 t.^3]
+B = [0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]
+C = [P_0; P_1; P_2; P_3]
+%With this we sould now be able to speed up the computations even more!
+A * (1/2*B) * C
+
+%Testing ones vs t.^0 (only matlab...)
+%But the t.^0 is much faster
+a = (1:4)';
+tic
+b = ones(size(a,1),1);
+toc
+c = a.^0;
+tic
+toc
 
 
 %% Old way

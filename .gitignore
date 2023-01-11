@@ -1,0 +1,6 @@
+#Remove the matlab open files
+*.asv
+
+#Remove images
+*.png
+*.jpg
