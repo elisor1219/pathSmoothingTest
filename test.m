@@ -1,7 +1,7 @@
 clc;clear;clf
 hold on
 grid on
-title("Add 4|n points")
+title("Add points")
 
 %We would like to hava the knot/joint points to be aligned or even mirrored
 %Make it mirrired: We need to lock P_4! P_4 = 2*P_3-P_2
@@ -107,11 +107,31 @@ end
 clf;clc
 %Something seems off... The algorithm with tow for-loops is faster then the
 %one with only one for-loop...
+%tS = tic;
 %[pointsCarmull,fakePoints] = carmull_twoForLoops(path, 60);
-[pointsCarmull,fakePoints] = carmull_faster(path, 60);
+%toc(tS)
+%tS2 = tic;
+%[pointsCarmull,fakePoints,timer,timer2] = carmull_faster(path, 60);
+%toc(tS2)
+%timer/(sum(timer))
+%sum(timer2,2)/(sum(sum(timer)))
+tS3 = tic;
+[pointsCarmull,fakePoints,timer,timer2] = bSpline(path, 60);
+toc(tS3)
+timer/(sum(timer))
+sum(timer2,2)/(sum(sum(timer)))
+
+% We could use an interpolation algorithm on the curve before using the
+% b-spline to decreese the curvature, use the interpolation as a parameter
+% to adjust the curvatuer.
+% We could also do a dynamic interpolation, where we interpolate more when
+% the angel is high.
+
+%[pointsCarmull,fakePoints] = bSplineFaster(path,60);
 
 hold on
 grid on
+axis([0 1 0 1])
 title("Testing a cubic spline (Carmull-Rom)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
 plot(pointsCarmull(1,:), pointsCarmull(2,:), 'LineWidth',3)
@@ -123,7 +143,7 @@ line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', 
 %    
 %end
 
-saveas(gcf,"carmull_twoForLoops.png")
+%saveas(gcf,"B_spline.png")
 %% Testing to vectorize some part
 clc; clear
 t = (1:4)';

@@ -1,4 +1,4 @@
-function [pointsCarmull,fakePoints, timer, forTimer] = carmull_faster(path,pointsPerSection)
+function [pointsCarmull,fakePoints, timer, forTimer] = bSpline(path,pointsPerSection)
 %CARMULL_TWOFORLOOPS By using the Carmull-rom spline, compute the curve
 %   Detailed explanation goes here
 
@@ -6,12 +6,14 @@ timer = zeros(1,6);
 
 %Characteristic matrix
 tic
-charMat = (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]);
+s = 0.5;
+charMat = (1/6.*[1 4 1 0; -3 0 3 0; 3 -6 3 0; -1 3 -3 1]);
 timer(1) = toc;
 
 %Carmull = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]) * [P_0; P_1; P_2; P_3];
 
 tic
+%This will make the first and last point be the start and end points
 firstFakePoint = -(path(:,2) - path(:,1)) + path(:,1);
 lastFakePoint = -(path(:,end-1) - path(:,end)) + path(:,end);
 fakePoints = [firstFakePoint lastFakePoint];
