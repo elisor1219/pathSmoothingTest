@@ -1,1 +1,3 @@
-# pathSmothingTest
+# pathSmoothingTest
+
+Sorry about the messy code... 
