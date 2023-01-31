@@ -1,5 +1,5 @@
-function [pointsCarmull,fakePoints, timer, forTimer] = carmull_faster(path,pointsPerSection)
-%CARMULL_TWOFORLOOPS By using the Carmull-rom spline, compute the curve
+function [pointsCatmull,fakePoints, timer, forTimer] = catmull_faster(path,pointsPerSection)
+%CARMULL_TWOFORLOOPS By using the Catmull-rom spline, compute the curve
 %   Detailed explanation goes here
 
 timer = zeros(1,6);
@@ -9,7 +9,7 @@ tic
 charMat = (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]);
 timer(1) = toc;
 
-%Carmull = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]) * [P_0; P_1; P_2; P_3];
+%Catmull = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]) * [P_0; P_1; P_2; P_3];
 
 tic
 firstFakePoint = -(path(:,2) - path(:,1)) + path(:,1);
@@ -22,7 +22,7 @@ t = linspace(0,1,pointsPerSection)';
 %T-matrix
 tMat = [t.^0 t t.^2 t.^3];
 pathAndFake = [firstFakePoint path lastFakePoint]';
-pointsCarmull = zeros(2, (size(path,2)-1)*size(t,2));
+pointsCatmull = zeros(2, (size(path,2)-1)*size(t,2));
 sectionSize = size(t,1);
 timer(3) = toc;
 
@@ -50,7 +50,7 @@ for i = 1:size(pathAndFake,1)-3
     endWind = (sectionSize)*(i);
     forTimer(3,i) = toc;
     tic
-    pointsCarmull(:,startWind:endWind) = (tMat * charMat * pMat)';
+    pointsCatmull(:,startWind:endWind) = (tMat * charMat * pMat)';
     forTimer(4,i) = toc;
 end
 timer(4) = toc(tStart);

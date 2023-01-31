@@ -28,7 +28,7 @@ hold off
 %% Plot the path
 
 clf;clc
-[pointsCarmull,fakePointsCarmull] = carmull_faster(path, 60);
+[pointsCatmull,fakePointsCatmull] = catmull_faster(path, 60);
 
 [pointsBSpline,fakePointsBSpline] = bSpline(path, 60);
 
@@ -39,18 +39,18 @@ clf;clc
 % We could also do a dynamic interpolation, where we interpolate more when
 % the angel is high.
 
-%Plot the Carmull-Rom spline generated curve
+%Plot the Catmull-Rom spline generated curve
 subplot(2,1,1)
 hold on
 grid on
-title("Testing a cubic spline (Carmull Rom spline)", 'FontSize',13)
+title("Testing a cubic spline (Catmull Rom spline)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
-plot(pointsCarmull(1,:), pointsCarmull(2,:), 'LineWidth',3)
+plot(pointsCatmull(1,:), pointsCatmull(2,:), 'LineWidth',3)
 %Plot the fake points
-line([fakePointsCarmull(1,1) path(1,1)], [fakePointsCarmull(2,1) path(2,1)], 'LineStyle', '--', 'Marker', 'o')
-line([fakePointsCarmull(1,2) path(1,end)], [fakePointsCarmull(2,2) path(2,end)], 'LineStyle', '--', 'Marker', 'o')
+line([fakePointsCatmull(1,1) path(1,1)], [fakePointsCatmull(2,1) path(2,1)], 'LineStyle', '--', 'Marker', 'o')
+line([fakePointsCatmull(1,2) path(1,end)], [fakePointsCatmull(2,2) path(2,end)], 'LineStyle', '--', 'Marker', 'o')
 
-saveas(gcf,"Carmull_spline_main.png")
+saveas(gcf,"Catmull_spline_main.png")
 
 %Plot the B spline generated curve
 subplot(2,1,2)

@@ -24,7 +24,7 @@ title("Add points")
 
 %Control points -> Splines -> Curves
 
-%Think we need a Carmull-Rom!!!!
+%Think we need a Catmull-Rom!!!!
 
 %See 1:01:42 for a table of splines
 axis([0 1 0 1])
@@ -56,15 +56,15 @@ end
 %Bezier spline
 Bezier = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * [1 0 0 0; -3 3 0 0; 3 -6 3 0; -1 3 -3 1] * [P_0; P_1; P_2; P_3];
 
-%Carmull-Rom spline
-Carmull = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]) * [P_0; P_1; P_2; P_3];
+%Catmull-Rom spline
+Catmull = @(t, P_0, P_1, P_2, P_3) [1 t t^2 t^3] * (1/2.*[0 2 0 0; -1 0 1 0; 2 -5 4 -1; -1 3 -3 1]) * [P_0; P_1; P_2; P_3];
 
 %Will go from 0 to 
 u = 0;
 hold off
 
 %% Better way?
-% Carmull-Rom spline
+% Catmull-Rom spline
 firstFakePoint = -(path(:,2) - path(:,1)) + path(:,1);
 lastFakePoint = -(path(:,end-1) - path(:,end)) + path(:,end);
 fakePoints = [firstFakePoint lastFakePoint];
@@ -75,17 +75,17 @@ if extraPath ~= 0
 end
 numberOfSections = size(path,2)/4;
 
-pointsCarmull = carmull_twoForLoops(path, 10);
+pointsCatmull = catmull_twoForLoops(path, 10);
 
 %t = linspace(0,1);
 %pathAndFake = [firstFakePoint path lastFakePoint];
-%pointsCarmull = zeros(2, (size(path,2)-1)*size(t,2));
+%pointsCatmull = zeros(2, (size(path,2)-1)*size(t,2));
 %sectionSize = size(t,2);
 %
 %for i = 1:size(pathAndFake,2)-3
 %    for j = 1:sectionSize
-%        pointsCarmull(1,j+(sectionSize)*(i-1)) = Carmull(t(j), pathAndFake(1,i), pathAndFake(1,i+1), pathAndFake(1,i+2), pathAndFake(1,i+3));
-%        pointsCarmull(2,j+(sectionSize)*(i-1)) = Carmull(t(j), pathAndFake(2,i), pathAndFake(2,i+1), pathAndFake(2,i+2), pathAndFake(2,i+3));
+%        pointsCatmull(1,j+(sectionSize)*(i-1)) = Catmull(t(j), pathAndFake(1,i), pathAndFake(1,i+1), pathAndFake(1,i+2), pathAndFake(1,i+3));
+%        pointsCatmull(2,j+(sectionSize)*(i-1)) = Catmull(t(j), pathAndFake(2,i), pathAndFake(2,i+1), pathAndFake(2,i+2), pathAndFake(2,i+3));
 %    end
 %end
 %%
@@ -97,8 +97,8 @@ onSection = floor(h(i)) + 1;
 
 while onSection <= numberOfSections
     t = h(i) - floor(h(i))
-    pointsCarmull(1,i) = Carmull(t, path(1,1), path(1,2), path(1,3), path(1,4));
-    pointsCarmull(2,i) = Carmull(t, path(2,1), path(2,2), path(2,3), path(2,4));
+    pointsCatmull(1,i) = Catmull(t, path(1,1), path(1,2), path(1,3), path(1,4));
+    pointsCatmull(2,i) = Catmull(t, path(2,1), path(2,2), path(2,3), path(2,4));
     i = i+1;
     onSection = floor(h(i)) + 1;
 end
@@ -108,15 +108,15 @@ clf;clc
 %Something seems off... The algorithm with tow for-loops is faster then the
 %one with only one for-loop...
 %tS = tic;
-%[pointsCarmull,fakePoints] = carmull_twoForLoops(path, 60);
+%[pointsCatmull,fakePoints] = catmull_twoForLoops(path, 60);
 %toc(tS)
 %tS2 = tic;
-%[pointsCarmull,fakePoints,timer,timer2] = carmull_faster(path, 60);
+%[pointsCatmull,fakePoints,timer,timer2] = catmull_faster(path, 60);
 %toc(tS2)
 %timer/(sum(timer))
 %sum(timer2,2)/(sum(sum(timer)))
 tS3 = tic;
-[pointsCarmull,fakePoints,timer,timer2] = bSpline(path, 60);
+[pointsCatmull,fakePoints,timer,timer2] = bSpline(path, 60);
 toc(tS3)
 timer/(sum(timer))
 sum(timer2,2)/(sum(sum(timer)))
@@ -127,14 +127,14 @@ sum(timer2,2)/(sum(sum(timer)))
 % We could also do a dynamic interpolation, where we interpolate more when
 % the angel is high.
 
-%[pointsCarmull,fakePoints] = bSplineFaster(path,60);
+%[pointsCatmull,fakePoints] = bSplineFaster(path,60);
 
 hold on
 grid on
 axis([0 1 0 1])
 title("Testing a cubic spline (B-spline)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
-plot(pointsCarmull(1,:), pointsCarmull(2,:), 'LineWidth',3)
+plot(pointsCatmull(1,:), pointsCatmull(2,:), 'LineWidth',3)
 %Plot the fake points
 line([fakePoints(1,1) path(1,1)], [fakePoints(2,1) path(2,1)], 'LineStyle', '--', 'Marker', 'o')
 line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', '--', 'Marker', 'o')
@@ -175,8 +175,8 @@ h = 1/times;
 sectionsOnPath = size(path,2)/4;
 
 pointsBezier = zeros(2,(times+1)*sectionsOnPath);
-pointsCarmull = zeros(2,times+1);
-%For the carmull, mirror the second first and last point on the first and
+pointsCatmull = zeros(2,times+1);
+%For the catmull, mirror the second first and last point on the first and
 %last point
 firstFakePoint = -(path(:,2) - path(:,1)) + path(:,1);
 lastFakePoint = -(path(:,end-1) - path(:,end)) + path(:,end);
@@ -197,8 +197,8 @@ for i = 1:times+1
     pointsBezier(1,i) = Bezier(t, path(1,1), path(1,2), path(1,3), path(1,4));
     pointsBezier(2,i) = Bezier(t, path(2,1), path(2,2), path(2,3), path(2,4));
 
-    pointsCarmull(1,i) = Carmull(t, path(1,1), path(1,2), path(1,3), path(1,4));
-    pointsCarmull(2,i) = Carmull(t, path(2,1), path(2,2), path(2,3), path(2,4));
+    pointsCatmull(1,i) = Catmull(t, path(1,1), path(1,2), path(1,3), path(1,4));
+    pointsCatmull(2,i) = Catmull(t, path(2,1), path(2,2), path(2,3), path(2,4));
     t = t + h;
 end
 subplot(2,1,1) %Subplot 1 v-v-v-v-v-v-v-v-v-v-v
@@ -209,9 +209,9 @@ plot(pointsBezier(1,:), pointsBezier(2,:))
 
 subplot(2,1,2) %Subplot 2 v-v-v-v-v-v-v-v-v-v-v
 hold on
-title("Testing a cubic spline (Carmull-Rom)", 'FontSize',13)
+title("Testing a cubic spline (Catmull-Rom)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
-plot(pointsCarmull(1,:), pointsCarmull(2,:))
+plot(pointsCatmull(1,:), pointsCatmull(2,:))
 %Plot the fake points
 line([fakePoints(1,1) path(1,1)], [fakePoints(2,1) path(2,1)], 'LineStyle', '--', 'Marker', 'o')
 line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', '--', 'Marker', 'o')
