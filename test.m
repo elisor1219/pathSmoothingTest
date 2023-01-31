@@ -132,7 +132,7 @@ sum(timer2,2)/(sum(sum(timer)))
 hold on
 grid on
 axis([0 1 0 1])
-title("Testing a cubic spline (Carmull-Rom)", 'FontSize',13)
+title("Testing a cubic spline (B-spline)", 'FontSize',13)
 plot(path(1,:), path(2,:), 'o-')
 plot(pointsCarmull(1,:), pointsCarmull(2,:), 'LineWidth',3)
 %Plot the fake points
@@ -219,3 +219,5 @@ line([fakePoints(1,2) path(1,end)], [fakePoints(2,2) path(2,end)], 'LineStyle', 
 
 
 hold off
+
+

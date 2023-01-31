@@ -6,7 +6,6 @@ timer = zeros(1,6);
 
 %Characteristic matrix
 tic
-s = 0.5;
 charMat = (1/6.*[1 4 1 0; -3 0 3 0; 3 -6 3 0; -1 3 -3 1]);
 timer(1) = toc;
 
