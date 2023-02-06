@@ -70,13 +70,8 @@ def CurvePoint(n,p,U,Pw,u):
     N = basisFuns(span,u,p,U)
 
     Cw = 0
-    print('-------------------------------------')
     for j in range(0,p+1):
-        #print('j = ', j)
         Cw = Cw + N[j] * Pw[span-p+j,:]
-        print('Cw = ', Cw)
-        #print('N[j] = ', N[j])
-        #print('Pw[span-p+j,:] = ', Pw[span-p+j,:])
     w = Cw[2]
     C = Cw / w
     # Remove the last element of C
@@ -171,7 +166,7 @@ t = time.time()
 for inx in range(0,u.shape[0]):
     C[inx,:] = CurvePoint(n,p,U,Pw,u[inx])
 
-print('Time elapsed = ', time.time() - t)
+#print('Time elapsed = ', time.time() - t)
 
 plt.figure()
 if isBspline:
