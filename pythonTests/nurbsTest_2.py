@@ -70,8 +70,13 @@ def CurvePoint(n,p,U,Pw,u):
     N = basisFuns(span,u,p,U)
 
     Cw = 0
+    print('-------------------------------------')
     for j in range(0,p+1):
+        #print('j = ', j)
         Cw = Cw + N[j] * Pw[span-p+j,:]
+        print('Cw = ', Cw)
+        #print('N[j] = ', N[j])
+        #print('Pw[span-p+j,:] = ', Pw[span-p+j,:])
     w = Cw[2]
     C = Cw / w
     # Remove the last element of C
@@ -84,13 +89,18 @@ def CurvePoint(n,p,U,Pw,u):
 
 # <-- Means that this is the input data
 isBspline = True #                                <-- Is this a B-spline curve?
-P = np.array([(0,0), (1,1), (3,2), (6,-2), (7,3)]) #                <-- Control points
+plt.figure()
+plt.axis([0, 10, -5, 5])
+plt.grid(True)
+P = plt.ginput(-1, -1) #                                   <-- Control points
+P = np.array(P)
+#P = np.array([(0,0), (1,1), (3,2), (6,-2), (7,3), (7,2), (8,-1), (10, 7)]) #                <-- Control points
 n = P.shape[0] - 1
 if isBspline:
     w = np.ones((n+1))
 else:
     w = np.array([1, 0.5, 5, 5, 1]) #             <-- Weights (depends on isBspline)
-p = 2 #                                                 <-- Degree of the curve
+p = 3 #                                                 <-- Degree of the curve
 # Auto determine the knots
 autoDeterminKnots = True #                         <-- Auto determine the knots
 
