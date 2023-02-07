@@ -98,35 +98,18 @@ def main():
     degree = nurbsClass.getDegree()
     title = nurbsClass.getTypOfCurve()
 
-    #t1 = th.Thread(target=window.plotCurve, args=(C, degree, title), name='t1', daemon=True)
-    #t1.start()
-
-    # print ID of current process
-    print("ID of process running main program: {}".format(os.getpid()))
- 
-    # print name of main thread
-    print("Main thread name: {}".format(th.current_thread().name))
-
     
-    count = 0
     while True:
-        print('- - - - - - - - - Click and drag to move a point - - - - - - - - -')
-        #Main thread
         window.plotCurve(C, degree, title)
 
-        #Thread 1
         clickAndReleasePos = window.getClickAndReleasePos()
-        print('clickAndReleasePos: ', clickAndReleasePos)
     
-        pIdx = nurbsClass.findClosestPoint(clickAndReleasePos[1,:])
-        print('pIdx: ', pIdx)
+        pIdx = nurbsClass.findClosestPoint(clickAndReleasePos[0,:])
     
         P[pIdx] = clickAndReleasePos[1,:]
         C = nurbsClass.constructBezier(P)
         
-        #wait 1 second
 
-    #t1.join()
 
 
 if __name__ == '__main__':
