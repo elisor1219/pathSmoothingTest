@@ -1,18 +1,18 @@
 import time
 import numpy as np
-import matplotlib.pyplot as plt
+import threading as th
+import os
+
 
 from nurbsAlgorithms import CurvePoint
 from nurbs import NURBS
+from plotterPainter import plotterPainter
 
 def main():
-        # <-- Means that this is the input data
+    # <-- Means that this is the input data
+    window = plotterPainter([-5, 5, -5, 5])
+    P = window.givePoints()
     isBspline = True #                                <-- Is this a B-spline curve?
-    plt.figure()
-    plt.axis([0, 10, -5, 5])
-    plt.grid(True)
-    P = plt.ginput(-1, -1) #                                   <-- Control points
-    P = np.array(P)
     n = P.shape[0] - 1
     if isBspline:
         w = np.ones((n+1))
@@ -88,22 +88,45 @@ def main():
     for inx in range(0,u.shape[0]):
         C[inx,:] = CurvePoint(n,p,U,Pw,u[inx])
 
-    nurbsClass = NURBS
-    C = nurbsClass.constructBezier(P, 100)
+    nurbsClass = NURBS(100)
+    start = time.time()
+    C = nurbsClass.constructBezier(P)
+    end = time.time()
+    #TODO: Remove this print
+    print('Time to construct Bezier curve: ', end-start)
 
-    #print('Time elapsed = ', time.time() - t)
+    degree = nurbsClass.getDegree()
+    title = nurbsClass.getTypOfCurve()
 
-    plt.figure()
-    if isBspline:
-        plt.title('B-spline curve')
-    else:
-        plt.title('Rational B-spline curve')
+    #t1 = th.Thread(target=window.plotCurve, args=(C, degree, title), name='t1', daemon=True)
+    #t1.start()
 
-    plt.plot(C[:,0], C[:,1], label='Curve point of degree ' + str(p))
-    plt.plot(P[:,0], P[:,1], 'o--', label='Control points')
-    plt.legend()
-    plt.show()
+    # print ID of current process
+    print("ID of process running main program: {}".format(os.getpid()))
+ 
+    # print name of main thread
+    print("Main thread name: {}".format(th.current_thread().name))
 
+    
+    count = 0
+    while True:
+        print('- - - - - - - - - Click and drag to move a point - - - - - - - - -')
+        #Main thread
+        window.plotCurve(C, degree, title)
+
+        #Thread 1
+        clickAndReleasePos = window.getClickAndReleasePos()
+        print('clickAndReleasePos: ', clickAndReleasePos)
+    
+        pIdx = nurbsClass.findClosestPoint(clickAndReleasePos[1,:])
+        print('pIdx: ', pIdx)
+    
+        P[pIdx] = clickAndReleasePos[1,:]
+        C = nurbsClass.constructBezier(P)
+        
+        #wait 1 second
+
+    #t1.join()
 
 
 if __name__ == '__main__':

@@ -4,11 +4,19 @@ from nurbsAlgorithms import CurvePoint
 
 class NURBS:
 
-    def __init__():
+    _totalNumberOfPoints = 0
+    _degree = 0
+    _typOfCurve = ''
+    _controlPoints = np.empty((0,0))
+
+    def __init__(self, totalNumberOfPoints: int):
+        self._totalNumberOfPoints = totalNumberOfPoints
         print('NURBS!')
     
     # WARNING: 2d Bezier curve
-    def constructBezier(controlPoints, totalNumberOfPoints):
+    def constructBezier(self, controlPoints: np.ndarray):
+        self._controlPoints = controlPoints
+        self._typOfCurve = 'Bezier'
         numberOfControlPoints = controlPoints.shape[0]
         numberOfDimensions = controlPoints.shape[1]
         n = numberOfControlPoints - 1
@@ -16,6 +24,7 @@ class NURBS:
         # The degree of the Bezier curve is numberOfControlPoints - 1
         # TODO: Check if this is correct
         degree = n
+        self._degree = degree
 
         #numberOfKnots = n + degree + 2
         #r = numberOfKnots - 1
@@ -38,14 +47,37 @@ class NURBS:
             controlPointsWithWeights[idx,2] = weights[idx]
 
 
-        timeSteps = np.linspace(0, max(knots), totalNumberOfPoints)
-        curvePointsMatrix = np.zeros((totalNumberOfPoints, numberOfDimensions))
+        timeSteps = np.linspace(0, max(knots), self._totalNumberOfPoints)
+        curvePointsMatrix = np.zeros((self._totalNumberOfPoints, numberOfDimensions))
 
         for inx, u in enumerate(timeSteps):
             curvePointsMatrix[inx,:] = CurvePoint(n, degree, knots, 
                                              controlPointsWithWeights, u)
 
         return curvePointsMatrix
+
+    #TODO: Should maybe be in a separate class
+    def findClosestPoint(self, mousePoint: np.ndarray):
+        controlPoints = self._controlPoints
+
+        cloasestPoint = np.linalg.norm(mousePoint - controlPoints[0])
+        cloasestPointIdx = 0
+        for idx, point in enumerate(controlPoints):
+            tempCloasestPoint = np.linalg.norm(mousePoint - point)
+            if tempCloasestPoint < cloasestPoint:
+                cloasestPoint = tempCloasestPoint
+                cloasestPointIdx = idx
+
+        return cloasestPointIdx
+
+    # - - - - - Getters - - - - -
+    def getDegree(self):
+        return self._degree
+
+    def getTypOfCurve(self):
+        return self._typOfCurve
+
+    # - - - - - Setters - - - - -
 
     
 
