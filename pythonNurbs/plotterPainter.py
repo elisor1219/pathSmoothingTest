@@ -9,6 +9,9 @@ class plotterPainter:
     _grid = True
     _controlPoints = []
     _fontSizes = {'title': 20, 'label': 15}
+    _curvePoints = []
+    _degree = 0
+    _typOfCurve = ''
 
     #TODO: Not the most elegent solution, but it works.
     _clickAndReleasePos = np.zeros((2,2))
@@ -31,7 +34,10 @@ class plotterPainter:
     def plotCurve(self, curvePoints: np.ndarray, degree: int, typOfCurve: str):
         self._initFigure()
         controlPoints = self._controlPoints
-
+        self._curvePoints = curvePoints
+        self._degree = degree
+        self._typOfCurve = typOfCurve
+        
         labelPlt1 = 'Control points'
         labelPlt2 = 'Curve point of degree ' + str(degree)
         plt.plot(controlPoints[:,0], controlPoints[:,1], 'o--', label=labelPlt1)
@@ -47,7 +53,25 @@ class plotterPainter:
         plt.connect('button_release_event', self.on_release)
         plt.show()
 
+    def continuesUpdateCurve(self):
+        while True:
+            print('Start plotting')
+            self._initFigure()
+            plt.clf()
+            controlPoints = self._controlPoints
+            curvePoints = self._curvePoints
+            plt.plot(controlPoints[:,0], controlPoints[:,1], 'o--')
+            plt.plot(curvePoints[:,0], curvePoints[:,1])
 
+            plt.connect('button_press_event', self.on_click)
+            plt.connect('button_release_event', self.on_release)
+            #plt.connect('motion_notify_event', self.on_move)
+            plt.show()
+            print('Done plotting')
+
+
+
+    #TODO: The controller is currently in the plotter...
     def on_click(self, event):
         if event.button is MouseButton.LEFT:
             xPos, yPos = event.xdata, event.ydata
@@ -67,7 +91,8 @@ class plotterPainter:
                 #TODO: Close the figure and return the x position.
                 self._clickAndReleasePos[1,0] = xPos
                 self._clickAndReleasePos[1,1] = yPos
-                plt.close(self._currentFigure)
+                #plt.close(self._currentFigure)
+                
         
 
 
@@ -83,3 +108,10 @@ class plotterPainter:
     # - - - - - Setters - - - - -
     def setFontSizes(self, fontSizes: dict):
         self._fontSizes = fontSizes
+
+    def setControlPoints(self, controlPoints: np.ndarray):
+        self._controlPoints = controlPoints
+
+    def setCurvePoints(self, curvePoints: np.ndarray):
+        self._curvePoints = curvePoints
+
