@@ -1,3 +1,6 @@
+# Warning, messy
+Remember, this is just a test repository.
+
 # pathSmoothingTest
 
 You can run the code in the `main.m` file. 
