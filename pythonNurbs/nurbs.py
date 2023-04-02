@@ -22,17 +22,23 @@ class NURBS:
         n = numberOfControlPoints - 1
 
         # The degree of the Bezier curve is numberOfControlPoints - 1
-        # TODO: Check if this is correct
         degree = n
         self._degree = degree
 
-        #numberOfKnots = n + degree + 2
-        #r = numberOfKnots - 1
+        # A Bezier curve starts and ends at the first and last control point
+        # In other words, it is clamped at the start and end
+        clampedStart = True
+        clampedEnd = True
+
+        numberOfKnots = n + degree + 2
+        r = numberOfKnots - 1
 
         # For a Bezier curve, the knot vector is [0, 0, ..., 0, 1, 1, ..., 1]
-        UStart = np.zeros(degree+1)
-        UEnd = np.ones(degree+1)
-        knots = np.concatenate((UStart, UEnd))
+        knots = np.linspace(0,1,r+1)
+        if clampedStart:
+            knots[0:degree+1] = 0
+        if clampedEnd:
+            knots[r-degree:] = 1
         numberOfKnots = knots.shape[0]
         m = numberOfKnots - 1
 
@@ -47,7 +53,7 @@ class NURBS:
             controlPointsWithWeights[idx,2] = weights[idx]
 
 
-        timeSteps = np.linspace(0, max(knots), self._totalNumberOfPoints)
+        timeSteps = np.linspace(knots[degree], knots[-(degree+1)], self._totalNumberOfPoints)
         curvePointsMatrix = np.zeros((self._totalNumberOfPoints, numberOfDimensions))
 
         for inx, u in enumerate(timeSteps):

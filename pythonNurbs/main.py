@@ -10,6 +10,8 @@ from plotterPainter import plotterPainter
 
 def main():
     # <-- Means that this is the input data
+    #TODO: This is not good code...
+    #TODO: Currently it does its job, but I dont like the code
     window = plotterPainter([-5, 5, -5, 5])
     P = window.givePoints()
     isBspline = True #                                <-- Is this a B-spline curve?
@@ -20,7 +22,9 @@ def main():
         w = np.array([1, 0.5, 5, 5, 1]) #             <-- Weights (depends on isBspline)
     p = 3 #                                                 <-- Degree of the curve
     # Auto determine the knots
-    autoDeterminKnots = True #                         <-- Auto determine the knots
+    autoDeterminKnots = True #                        <-- Auto determine the knots
+    clampedStart = True #                             <-- Clamp the start of the curve
+    clampedEnd = True #                               <-- Clamp the end of the curve
 
 
 
@@ -45,15 +49,17 @@ def main():
     UStart = np.zeros((p+1))
     UEnd = np.ones((p+1))
     # UMid is of size n - p
+    U = np.zeros(r+1)
     if autoDeterminKnots:
-        UMid = np.linspace(0,1,n-p+2)
-        UMid = np.delete(UMid, 0)
-        lastUMidIndex = UMid.shape[0]-1
-        UMid = np.delete(UMid, lastUMidIndex)
+        U = np.linspace(0,1,r+1)
+        if clampedStart:
+            U[0:p+1] = 0
+
+        if clampedEnd:
+            U[r-p:] = 1
     else:
         print('n-p = ', n-p)
         UMid = [0.5]
-    U = np.concatenate((UStart, UMid, UEnd))
     m = U.shape[0] - 1
 
     # Error checking
@@ -81,7 +87,7 @@ def main():
         Pw[i,1] = P[i,1]*w[i]
         Pw[i,2] = w[i]
 
-    u = np.linspace(0,max(U),100)
+    u = np.linspace(U[p], U[-(p+1)], 100)
     C = np.zeros((u.shape[0],P.shape[1]))
 
     t = time.time()
