@@ -7,7 +7,8 @@ def findSpan(n,p,u,U):
     # Output: i
 
     # Special cases
-    if u == U[n+1]:
+    threshold = 1e-10
+    if abs(u - U[n+1]) < threshold:
         return n
 
     # Binary search
